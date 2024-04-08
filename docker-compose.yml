@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    hostname: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    ports:
+      - "1000:9000"
+  mongo:
+    image: mongo
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    volumes:
+      - mongoData:/data/db
+      - mongoConfig:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+  server:
+    image: server
+    build:
+      context: .
+      dockerfile: backend-end-py-mongo/Dockerfile
+    container_name: server
+    hostname: server
+    restart: always
+    volumes:
+      - server:/code
+    ports:
+      - "80:80"
+volumes:
+  portainer:
+    name: portainer
+  mongoData:
+    name: mongoData
+  mongoConfig:
+    name: mongoConfig
+  server:
+    name: server
